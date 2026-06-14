@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>samoolybie | программист • кибербезопасность • OSINT</title>
+  <!-- Подключаем шрифт с "техническим" настроением -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0c0f;
+      font-family: 'Inter', sans-serif;
+      color: #e5e9f0;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Анимированный фон с сеткой и частицами */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .grid {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 255, 196, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 196, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridMove 20s linear infinite;
+    }
+
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(40px, 40px); }
+    }
+
+    .particle {
+      position: absolute;
+      background: #00ffc3;
+      border-radius: 50%;
+      filter: blur(1px);
+      opacity: 0.15;
+      animation: float 12s infinite ease-in-out;
+    }
+
+    .particle:nth-child(1) { width: 120px; height: 120px; top: 10%; left: 5%; animation-duration: 14s; }
+    .particle:nth-child(2) { width: 80px; height: 80px; bottom: 15%; right: 8%; animation-duration: 10s; background: #00a3ff; }
+    .particle:nth-child(3) { width: 150px; height: 150px; top: 60%; left: 70%; animation-duration: 18s; background: #7b2fff; }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+
+    /* Основная карточка */
+    .card {
+      position: relative;
+      z-index: 10;
+      max-width: 700px;
+      width: 100%;
+      background: rgba(15, 20, 25, 0.75);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(0, 255, 196, 0.15);
+      border-radius: 2.5rem;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 255, 196, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.4s ease;
+      animation: fadeSlideUp 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+
+    .card:hover {
+      box-shadow: 0 30px 60px -15px rgba(0, 255, 196, 0.2), 0 0 0 1px rgba(0, 255, 196, 0.25);
+      transform: translateY(-5px);
+    }
+
+    @keyframes fadeSlideUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Заголовок и аватар */
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .avatar {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, #00ffc3, #00a3ff);
+      border-radius: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 15px 30px -10px rgba(0, 255, 196, 0.4);
+      transform: rotate(2deg);
+      transition: transform 0.3s ease;
+      animation: softPulse 3s infinite alternate;
+    }
+
+    .avatar span {font-family: 'JetBrains Mono', monospace;
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: #0a0c0f;
+      text-shadow: 0 0 8px rgba(0,0,0,0.2);
+    }
+
+    @keyframes softPulse {
+      0% { box-shadow: 0 15px 30px -10px rgba(0, 255, 196, 0.4); }
+      100% { box-shadow: 0 20px 40px -8px rgba(0, 255, 196, 0.7); }
+    }
+
+    h1 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #ffffff, #00ffc3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.3rem;
+    }
+
+    .subtitle {
+      font-family: 'JetBrains Mono', monospace;
+      color: #9aa9b9;
+      font-size: 1rem;
+      border-left: 3px solid #00ffc3;
+      padding-left: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Секции с информацией */
+    .bio-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+      margin: 2rem 0 2.2rem;
+    }
+
+    .info-block {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 1.5rem;
+      padding: 1.4rem 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(5px);
+      transition: all 0.25s ease;
+      animation: fadeInItem 0.6s ease forwards;
+      opacity: 0;
+    }
+
+    .info-block:nth-child(1) { animation-delay: 0.2s; }
+    .info-block:nth-child(2) { animation-delay: 0.35s; }
+    .info-block:nth-child(3) { animation-delay: 0.5s; }
+
+    @keyframes fadeInItem {
+      0% { opacity: 0; transform: translateX(-10px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+
+    .info-block:hover {
+      background: rgba(0, 255, 196, 0.04);
+      border-color: rgba(0, 255, 196, 0.25);
+      transform: translateX(6px);
+    }
+
+    .label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #00ffc3;
+      margin-bottom: 0.8rem;
+    }
+
+    .label i {
+      font-style: normal;
+      font-size: 1.1rem;
+    }
+
+    .value {
+      font-weight: 500;
+      font-size: 1.2rem;
+      word-break: break-word;
+    }
+
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .tag {
+      background: rgba(0, 255, 196, 0.08);
+      border: 1px solid rgba(0, 255, 196, 0.25);
+      padding: 0.35rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.9rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #b0f0e0;
+      transition: 0.2s;
+    }
+
+    .tag:hover {
+      background: rgba(0, 255, 196, 0.18);
+      border-color: #00ffc3;
+      color: white;
+    }
+
+    .telegram-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #1e2a33;
+      padding: 0.6rem 1.3rem;
+      border-radius: 2.5rem;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      border: 1px solid #00ffc3;
+      transition: all 0.3s ease;
+      margin-top: 0.4rem;
+      box-shadow: 0 5px 15px rgba(0, 255, 196, 0.1);
+    }
+
+    .telegram-link:hover {
+      background: #00ffc3;
+      color: #0a0c0f;
+      box-shadow: 0 8px 20px rgba(0, 255, 196, 0.4);
+      transform: translateY(-2px);
+      border-color: #00ffc3;
+    }
+
+    .footer-note {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #6b7b8b;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 1.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .ethos {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .ethos span {
+      color: #00ffc3;
+      font-weight: 600;
+    }
+
+    @media (max-width: 500px) {
+      .card {padding: 2rem 1.2rem;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Декоративные элементы фона -->
+  <div class="bg-animation">
+    <div class="grid"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <!-- Основной контент -->
+  <main class="card">
+    <div class="header">
+      <div class="avatar">
+        <span>{ }</span>
+      </div>
+      <h1>samoolybie</h1>
+      <div class="subtitle">python & javascript developer</div>
+    </div>
+
+    <div class="bio-grid">
+      <!-- Блок: Программирование -->
+      <div class="info-block">
+        <div class="label">
+          <i>💻</i> стек технологий
+        </div>
+        <div class="value">Python • JavaScript (JS)</div>
+        <div class="tag-container">
+          <span class="tag">бэкенд</span>
+          <span class="tag">автоматизация</span>
+          <span class="tag">скрипты</span>
+          <span class="tag">full-stack</span>
+        </div>
+      </div>
+
+      <!-- Блок: Кибербезопасность и OSINT -->
+      <div class="info-block">
+        <div class="label">
+          <i>🔍</i> специализация
+        </div>
+        <div class="value">Кибербезопасность & OSINT</div>
+        <div class="tag-container">
+          <span class="tag">разведка</span>
+          <span class="tag">анализ</span>
+          <span class="tag">защита</span>
+          <span class="tag">OSINT</span>
+        </div>
+      </div>
+
+      <!-- Блок: Позиция (без хакинга/доксинга) -->
+      <div class="info-block">
+        <div class="label">
+          <i>🛡️</i> этический кодекс
+        </div>
+        <div class="value" style="font-size: 1.1rem; font-weight: 500;">
+          • don’t hacking<br>
+          • don’t dox<br>
+          • I’m don’t doxing, I’m a programmer
+        </div>
+        <div style="margin-top: 0.7rem; color: #a3b8cc;">
+          ✦ Исключительно разработка и исследование безопасности.
+        </div>
+      </div>
+    </div>
+
+    <!-- Telegram -->
+    <div style="display: flex; justify-content: center; margin: 0.5rem 0 0.8rem;">
+      <a href="https://t.me/samoolybie" target="_blank" rel="noopener noreferrer" class="telegram-link">
+        <span>📬</span> t.me/samoolybie
+      </a>
+    </div>
+
+    <div class="footer-note">
+      <div class="ethos">
+        <span>⚡</span> no dox · no hack
+      </div>
+      <div class="ethos">
+        <span>🔐</span> programmer mindset
+      </div>
+    </div>
+  </main>
+</body>
+</html>
